@@ -145,3 +145,19 @@ it('runs remaining SSH tests after real failures and stops them when a run is ca
     expect(step.if).toContain('always()')
   }
 })
+
+it.each([
+  'src/main/persistence/migrating-orcad-catalog/orcad-catalog-records.ts',
+  'src/main/persistence/migrating-orcad-catalog/orcad-catalog-row-identity.ts',
+  'src/main/persistence/migrating-orcad-catalog/orcad-destination-catalog-projection.ts',
+  'src/main/ssh/orcad-runtime-decommission.ts'
+])('routes %s to the template-building stop/redeploy lane', (file) => {
+  const spec = 'tests/e2e/ssh-orcad-stop-redeploy.spec.ts'
+  expect(selectPrE2eSpecs([file])).toContain(spec)
+  expect(classify([spec])).toEqual({ e2e_run_changed: false, e2e_needs_build: true })
+  const job = workflow.jobs['orcad-auto-convert-docker']
+  expect(job.if).toContain(spec)
+  expect(job.steps.find((step) => step.name === 'Convert a relay-era Docker host').run).toContain(
+    spec
+  )
+})

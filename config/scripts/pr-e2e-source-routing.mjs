@@ -14,6 +14,15 @@ const NATIVE_IME_HARNESS =
 
 export const PR_E2E_SOURCE_ROUTES = [
   {
+    id: 'ssh.orcad-stop-redeploy',
+    specs: ['tests/e2e/ssh-orcad-stop-redeploy.spec.ts'],
+    matches: (file) =>
+      isProductSource(file) &&
+      /^src\/main\/(?:persistence\/migrating-orcad-catalog\/orcad-(?:catalog-records|catalog-row-identity|destination-catalog-projection)\.ts$|ssh\/orcad-runtime-decommission\.ts$)/.test(
+        file
+      )
+  },
+  {
     id: 'serve.orcad-mode-switch',
     specs: ['tests/e2e/orcad-serve-mode-switch.spec.ts'],
     matches: (file) =>
