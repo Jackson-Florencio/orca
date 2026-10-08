@@ -145,3 +145,19 @@ it('runs remaining SSH tests after real failures and stops them when a run is ca
     expect(step.if).toContain('always()')
   }
 })
+
+it.each([
+  'src/renderer/src/components/settings/use-runtime-environment-catalog.ts',
+  'src/renderer/src/components/settings/RuntimeEnvironmentsPane.tsx',
+  'src/renderer/src/components/settings/runtime-server-row.tsx',
+  'src/renderer/src/store/slices/runtime-status.ts'
+])('routes %s to the template-building saved-server catalog lane', (file) => {
+  const spec = 'tests/e2e/ssh-orcad-settings-catalog.spec.ts'
+  expect(selectPrE2eSpecs([file])).toContain(spec)
+  expect(classify([spec])).toEqual({ e2e_run_changed: false, e2e_needs_build: true })
+  const job = workflow.jobs['orcad-auto-convert-docker']
+  expect(job.if).toContain(spec)
+  expect(job.steps.find((step) => step.name === 'Convert a relay-era Docker host').run).toContain(
+    spec
+  )
+})

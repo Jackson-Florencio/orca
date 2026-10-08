@@ -14,6 +14,15 @@ const NATIVE_IME_HARNESS =
 
 export const PR_E2E_SOURCE_ROUTES = [
   {
+    id: 'ssh.orcad-settings-catalog',
+    specs: ['tests/e2e/ssh-orcad-settings-catalog.spec.ts'],
+    matches: (file) =>
+      isProductSource(file) &&
+      /^src\/renderer\/src\/(?:components\/settings\/(?:use-runtime-environment-catalog|RuntimeEnvironmentsPane|runtime-server-row)\.tsx?$|store\/slices\/runtime-status\.ts$)/.test(
+        file
+      )
+  },
+  {
     id: 'serve.orcad-mode-switch',
     specs: ['tests/e2e/orcad-serve-mode-switch.spec.ts'],
     matches: (file) =>
