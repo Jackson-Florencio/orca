@@ -14,6 +14,7 @@ import {
 } from './markdown-doc-links'
 import { selectMarkdownDocumentWorktreePath } from './markdown-document-worktree-path-selector'
 import { requestSharedMarkdownDocumentList } from './markdown-document-list-request'
+import { useMarkdownDocumentWatchRefresh } from './use-markdown-document-watch-refresh'
 
 type OpenMarkdownDocumentOptions = {
   anchor?: string | null
@@ -74,7 +75,7 @@ export function useMarkdownDocuments(
   const requestRef = useRef(0)
 
   const refreshMarkdownDocuments = useCallback(
-    async (requireFresh = false): Promise<void> => {
+    async (requireFresh = false, freshAfter?: number): Promise<void> => {
       if (!worktreeId || !worktreePath) {
         return
       }
@@ -93,7 +94,7 @@ export function useMarkdownDocuments(
             connectionId: connectionId ?? undefined
           },
           worktreePath,
-          { requireFresh }
+          { requireFresh, ...(freshAfter === undefined ? {} : { freshAfter }) }
         )
         if (requestRef.current !== requestId) {
           return
@@ -195,6 +196,13 @@ export function useMarkdownDocuments(
       requestRef.current += 1
     }
   }, [activeFile.id, isMarkdown, viewMode, refreshMarkdownDocuments])
+
+  useMarkdownDocumentWatchRefresh({
+    enabled: isMarkdown && !!worktreeId,
+    worktreePath,
+    runtimeEnvironmentId: activeFile.runtimeEnvironmentId,
+    refresh: refreshMarkdownDocuments
+  })
 
   const markdownDocuments = useMemo(
     () => (snapshot?.key === scopeKey ? snapshot.documents : []),
